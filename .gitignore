@@ -12,7 +12,6 @@
 .vscode/
 Assets/@Resources
 Assets/@Scenes
-Assets/@Scripts
 Assets/Misc
 Assets/Test
 Packages

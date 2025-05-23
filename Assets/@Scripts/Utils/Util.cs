@@ -68,14 +68,28 @@ namespace STELLAREST_FTH
         {
             return eInt switch
             {
-                EInt.NoneOfValue => -1,
+                EIntDefault.NoneOfValue => -1,
                 _ => throw new ArgumentOutOfRangeException($"{nameof(EToInt)}, {eInt}")
+            };
+        }
+
+        public static float EToFloat<T>(T eFloat) where T : Enum
+        {
+            return eFloat switch
+            {
+                EFloatDefault.NoneOfValue => -1.0f,
+                _ => throw new ArgumentOutOfRangeException($"{nameof(EToFloat)}, {eFloat}")
             };
         }
 
         public static string EToString<T>(T eString) where T : Enum
         {
-            return null;
+            return eString switch
+            {
+                EStringDefault.Null => null,
+                EStringDefault.Empty => "",
+                _ => throw new ArgumentOutOfRangeException($"{nameof(EToString)}, {eString}")
+            };
         }
 
         public static int StringToHash(string str)

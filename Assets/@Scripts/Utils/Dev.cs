@@ -35,18 +35,28 @@ namespace STELLAREST_FTH
 #if UNITY_EDITOR
     public class DevKey
     {
-        public DevKey(EDevKey eDevKey, object keyInfo, int uniqueId)
+        public DevKey(EDevKey eDevKey, object keyInfo, int uniqueId, bool startFlag = false)
         {
             KeyType = eDevKey;
             KeyInfo = keyInfo;
             UniqueId = Util.StringToHash(eDevKey.ToString());
             UniqueId += uniqueId;
+            _flag = startFlag;
         }
 
         public EDevKey KeyType { get; } = EDevKey.None;
         public object KeyInfo { get; } = null;
-        public int UniqueId { get; } = Util.EToInt(EInt.NoneOfValue);
-        
+        public int UniqueId { get; } = Util.EToInt(EIntDefault.NoneOfValue);
+
+        private bool _flag = false;
+        public bool Flag
+        {
+            get
+            {
+                _flag = !_flag;
+                return _flag;
+            }
+        }
     }
 #endif
 
@@ -90,7 +100,7 @@ namespace STELLAREST_FTH
         public static bool KeyDown(EDevKey eDevKey, object keyInfo, [CallerLineNumber] int line = 0)
         {
             _devKeyDict = Util.InitOnce<Dictionary<EDevKey, DevKey>>(_devKeyDict);
-            bool input = UnityEngine.Input.GetKeyDown(DevInputKey(eDevKey));
+            bool input = UnityEngine.Input.GetKeyDown(DevKeyToKeyCode(eDevKey));
             if (input)
             {
                 if (_devKeyDict.TryGetValue(eDevKey, out var value) == false)
@@ -105,6 +115,36 @@ namespace STELLAREST_FTH
             }
 
             return input;
+        }
+
+        public static void KeyDown(EDevKey eDevKey, object keyInfo, Action trueCase,
+            Action falseCase, bool startFlag, [CallerLineNumber] int line = 0)
+        {
+            _devKeyDict = Util.InitOnce<Dictionary<EDevKey, DevKey>>(_devKeyDict);
+            bool input = UnityEngine.Input.GetKeyDown(DevKeyToKeyCode(eDevKey));
+            if (input)
+            {
+                if (_devKeyDict.TryGetValue(eDevKey, out var value) == false)
+                {
+                    _devKeyDict.Add(eDevKey, new DevKey(eDevKey: eDevKey, keyInfo: keyInfo + $"_ToggleEvents", uniqueId: line, 
+                        startFlag: startFlag));
+                    if (startFlag)
+                        trueCase?.Invoke();
+                    else
+                        falseCase?.Invoke();
+                    
+                    return;
+                }
+
+                int uniqueId = Util.StringToHash(eDevKey.ToString()) + line;
+                if (uniqueId == value.UniqueId)
+                {
+                    if (value.Flag)
+                        trueCase?.Invoke();
+                    else
+                        falseCase?.Invoke();
+                }
+            }
         }
 
         public static void PrintDevKeyInfos()
@@ -131,7 +171,7 @@ namespace STELLAREST_FTH
             return go;
         }
 
-        private static UnityEngine.KeyCode DevInputKey(EDevKey eInput)
+        private static UnityEngine.KeyCode DevKeyToKeyCode(EDevKey eInput)
         {
             return eInput switch
             {
@@ -140,7 +180,7 @@ namespace STELLAREST_FTH
                 EDevKey.Num05 => KeyCode.Alpha5, EDevKey.Num06 => KeyCode.Alpha6,
                 EDevKey.Num07 => KeyCode.Alpha7, EDevKey.Num08 => KeyCode.Alpha8,
                 EDevKey.Num09 => KeyCode.Alpha9, EDevKey.Num00 => KeyCode.Alpha0,
-                _ => throw new ArgumentOutOfRangeException($"{nameof(Dev)}::{nameof(DevInputKey)}")
+                _ => throw new ArgumentOutOfRangeException($"{nameof(Dev)}::{nameof(DevKeyToKeyCode)}")
             };
         }
 #endif

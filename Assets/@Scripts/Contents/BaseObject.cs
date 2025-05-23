@@ -8,29 +8,39 @@ namespace STELLAREST_FTH
         [ShowOnly][SerializeField] private int _myNum = 123;
         private void Update()
         {
-            // add first
+            // --- Formal Input ex
             if (Dev.KeyDown(EDevKey.Num00, keyInfo: $"{nameof(BaseObject)}::{nameof(Update)}"))
             {
-                Dev.Log("Num0::TrueCase01");
+                Dev.Log("Num0::TrueStatement01");
             }
 
-            // false
+            // --- Formal Input ex, 키 중복 테스트
             if (Dev.KeyDown(EDevKey.Num00, keyInfo: $"{nameof(BaseObject)}::{nameof(Update)}"))
             {
-                Dev.Log("Num0::TrueCase02");
+                Dev.Log("Num0::TrueStatement02");
             }
 
-            // add first
-            if (Dev.KeyDown(EDevKey.Num01, keyInfo: $"{nameof(BaseObject)}::{nameof(Update)}"))
-            {
-                Dev.Log("Num1::TrueCase01");
-            }
+            // --- Action Input ex
+            Dev.KeyDown(eDevKey: EDevKey.Num01, keyInfo: $"{nameof(BaseObject)}::{nameof(Update)}",
+                startFlag: true, trueCase: () =>
+                {
+                    Dev.Log("Num01 - TrueCase01");
+                },
+                falseCase: () =>
+                {
+                    Dev.Log("Num01 - FalseCase01");
+                });
 
-            // false
-            if (Dev.KeyDown(EDevKey.Num01, keyInfo: $"{nameof(BaseObject)}::{nameof(Update)}"))
-            {
-                Dev.Log("Num1::TrueCase02");
-            }
+            // --- Action Input ex, 키 중복 테스트
+            Dev.KeyDown(eDevKey: EDevKey.Num01, keyInfo: $"{nameof(BaseObject)}::{nameof(Update)}",
+                startFlag: true, trueCase: () =>
+                {
+                    Dev.Log("Num01 - TrueCase02");
+                },
+                falseCase: () =>
+                {
+                    Dev.Log("Num01 - FalseCase02");
+                });
         }
     }
 }

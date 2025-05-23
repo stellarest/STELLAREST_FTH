@@ -12,11 +12,22 @@ namespace STELLAREST_FTH
             Num05, Num06, Num07, Num08, Num09,
             Max = 10,
         }
-
-        public enum EInt
-        {
-            NoneOfValue = -1,
-        }
 #endif
+
+        public enum EIntDefault
+        {
+            NoneOfValue,
+        }
+
+        public enum EFloatDefault
+        {
+            NoneOfValue,
+        }
+
+        public enum EStringDefault
+        {
+            Null,
+            Empty,
+        }
     }
 }
